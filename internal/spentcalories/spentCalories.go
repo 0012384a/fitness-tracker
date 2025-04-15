@@ -20,13 +20,10 @@ const (
 func parseTraining(data string) (int, string, time.Duration, error) {
 	// ваш код ниже
 	var activity string
-	m := map[int]string{
-		1: "Бег",
-		2: "Ходьба",
-	}
+
 	s := strings.Split(data, ",")
 	if len(s) != 3 {
-		return 0, " ", 0, errors.New("ошибка в функции parseTraining, длина слайса не соответсвует 2")
+		return 0, " ", 0, errors.New("error in function parseTraining")
 	}
 	steps, err := strconv.Atoi(s[0])
 	if err != nil {
@@ -36,7 +33,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	if err != nil {
 		return 0, " ", 0, err
 	}
-	if s[1] == m[1] || s[1] == m[2] {
+	if s[1] == "Бег" || s[1] == "Ходьба" {
 		activity = s[1]
 	}
 	return steps, activity, duration, nil
@@ -75,24 +72,22 @@ func meanSpeed(steps int, duration time.Duration) float64 {
 func TrainingInfo(data string, weight, height float64) string {
 	// ваш код ниже
 	var result string
+	var spentCalories float64
 	steps, activity, duration, err := parseTraining(data)
 	if err != nil {
-		return " "
+		return err.Error()
 	}
 	switch activity {
 	case "Бег":
-		d := duration.Hours()
-		distance := distance(steps)
-		meanSpeed := meanSpeed(steps, duration)
-		spentCalories := RunningSpentCalories(steps, weight, duration)
-		result = fmt.Sprintf("Тип тренировки: %s \nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f \n", activity, d, distance, meanSpeed, spentCalories)
+		spentCalories = RunningSpentCalories(steps, weight, duration)
 	case "Ходьба":
-		d := duration.Hours()
-		distance := distance(steps)
-		meanSpeed := meanSpeed(steps, duration)
-		spentCalories := WalkingSpentCalories(steps, weight, height, duration)
-		result = fmt.Sprintf("Тип тренировки: %s \nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f \n", activity, d, distance, meanSpeed, spentCalories)
+		spentCalories = WalkingSpentCalories(steps, weight, height, duration)
 	}
+
+	d := duration.Hours()
+	distance := distance(steps)
+	meanSpeed := meanSpeed(steps, duration)
+	result = fmt.Sprintf("Тип тренировки: %s \nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f \n", activity, d, distance, meanSpeed, spentCalories)
 	return result
 }
 

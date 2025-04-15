@@ -12,6 +12,7 @@ import (
 
 var (
 	StepLength = 0.65 // длина шага в метрах
+	mInKm      = 1000
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
@@ -19,7 +20,7 @@ func parsePackage(data string) (int, time.Duration, error) {
 
 	s := strings.Split(data, ",")
 	if len(s) != 2 {
-		return 0, 0, errors.New("ошибка в функции parsePackage, длина слайса не соответствует 2")
+		return 0, 0, errors.New("error in function parsePackage")
 	}
 	steps, err := strconv.Atoi(s[0])
 	if err != nil {
@@ -46,12 +47,12 @@ func DayActionInfo(data string, weight, height float64) string {
 	// ваш код ниже
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		return " "
+		return err.Error()
 	}
 	if steps <= 0 {
 		return " "
 	}
-	distance := (float64(steps) * StepLength) / 1000
+	distance := (float64(steps) * StepLength) / float64(mInKm)
 	walkingSpentCalories := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
 	result := fmt.Sprintf("Количество шагов: %d \nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distance, walkingSpentCalories)
 	return result
